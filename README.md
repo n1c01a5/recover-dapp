@@ -1,5 +1,5 @@
 <p align="center">
-  <b style="font-size: 32px;">Recover</b>
+  <b style="font-size: 32px;">RECOVER</b>
 </p>
 
 <p align="center">
@@ -10,7 +10,7 @@
   <a href="https://github.com/prettier/prettier"><img src="https://img.shields.io/badge/styled_with-prettier-ff69b4.svg" alt="Styled with Prettier"></a>
 </p>
 
-The Recover user interface.
+The Recover dApp user interface.
 
 ## Get Started
 
@@ -18,7 +18,9 @@ The Recover user interface.
 2.  Install and set up the [MetaMask](https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=en) chrome extension.
 3.  Configure MetaMask on the Kovan Test Network.
 4.  `cp .airtable.development .airtable # and set the ids`
-5.  Run `yarn` to install dependencies and then `yarn start` to start the dev server.
+5.  Configure the environment variables in `.env.development` and rename it `mv .env.development .env`.
+6.  (Optional) Configure the Airtable keys in `.airtable.development` and rename it `mv .airtable.development .airtable`.
+7.  Run `yarn` to install dependencies and then `yarn start` to start the development server.
 
 ## Note
 

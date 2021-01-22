@@ -6,6 +6,7 @@
 # Production
 /build/
 /lambda
+.env
 
 # Logs
 /yarn-debug.log*

@@ -6,6 +6,7 @@ import { navigate } from '@reach/router'
 import ReactPhoneInput from 'react-phone-input-2'
 
 import { useDrizzle, useDrizzleState } from '../temp/drizzle-react-hooks'
+import CONSTANTS from '../constants'
 import Button from '../components/button'
 
 import 'react-phone-input-2/lib/style.css'
@@ -120,8 +121,16 @@ const Settings = ({ network, contract }) => {
       fundClaims,
       timeoutLocked
     }) => {
+      console.log({
+        address,
+        signMsg,
+        email,
+        phoneNumber,
+        fundClaims,
+        timeoutLocked
+      })
       fetch('/.netlify/functions/settings', {
-        method: 'post',
+        method: 'POST',
         body: JSON.stringify({
           network,
           address,
@@ -132,7 +141,7 @@ const Settings = ({ network, contract }) => {
       })
       .then(res => res.json())
       .then(data => {
-        if(data.result === 'Settings added')
+        if(data.result === (CONSTANTS.LAMBDA__SETTINGS_ADDED || CONSTANTS.LAMBDA__SETTINGS_UPDATED)) {
           window.localStorage.setItem('recover', JSON.stringify({
             ...JSON.parse(localStorage.getItem('recover') || '{}'),
             [drizzleState.ID]: {
@@ -143,10 +152,10 @@ const Settings = ({ network, contract }) => {
             }
           }))
 
-        setIsSaved(true)
-
+          setIsSaved(true)
+        }
         // TODO: if error, render error on the UI
-    }).catch(err => console.error(err))
+      }).catch(err => console.error(err))
   })
 
   // TODO: add fallback

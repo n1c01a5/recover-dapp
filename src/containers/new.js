@@ -179,6 +179,7 @@ const New = ({network, contract, itemID, pk}) => {
   const [isMMOpen, setMMOpen] = useState(false)
   const [isQrCodeScanModalOpen, setIsQrCodeScanModalOpen] = useState(false)
   const [qrCodeResult, setQrCodeResult] = useState('') // TODO: return the QrCode result
+  const [identity, setIdentity] = useState({})
   const { drizzle, useCacheSend } = useDrizzle()
   const drizzleState = useDrizzleState(drizzleState => ({
     account:
@@ -199,16 +200,14 @@ const New = ({network, contract, itemID, pk}) => {
       setMMOpen(true)
   }, [drizzleState])
 
-  let identity
-
   useEffect(() => {
     if (itemID !== 'undefined' && pk)
-      identity = {
+      setIdentity({
         privateKey: pk,
         publicKey: EthCrypto.publicKeyByPrivateKey(pk)
-      }
+      })
     else
-      identity = EthCrypto.createIdentity()
+      setIdentity(EthCrypto.createIdentity())
   }, [itemID, pk])
 
   const webcamRef = React.useRef(null)

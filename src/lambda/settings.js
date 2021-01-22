@@ -1,8 +1,9 @@
 import Airtable from 'airtable'
 import fs from 'fs'
 import dotenv from 'dotenv'
-import sigUtil from 'eth-sig-util'
+var sigUtil = require('eth-sig-util') // NOTE: eth-sig-util does not support `import`.
 
+import CONSTANTS from '../constants'
 import getIdByAddress from '../utils/getIdByAddress'
 
 // TODO: move to utils folder
@@ -24,7 +25,7 @@ exports.handler = async function(event, context, callback) {
   if (!["GET", "POST"].includes(event.httpMethod))
     return {
       statusCode: 403,
-      body: JSON.stringify({ error: "Method Not Allowed" })
+      body: JSON.stringify({ error: CONSTANTS.LAMBDA__METHOD_NOT_ALLOWED })
     }
 
   const params = JSON.parse(event.body)
@@ -42,11 +43,11 @@ exports.handler = async function(event, context, callback) {
   if (signer !== address.toLowerCase())
     return {
       statusCode: 405,
-      body: JSON.stringify({ error: "Address Not Allowed" })
+      body: JSON.stringify({ error: CONSTANTS.LAMBDA__ADDRESS__NOT_ALLOWED })
     }
 
   const base = new Airtable({ apiKey: AIRTABLE_API_KEY })
-    .base(process.env[`AIRTABLE_${network}_BASE`])
+    .base(process.env[`AIRTABLE_${network.toUpperCase()}_BASE`])
 
   try {
     if (event.httpMethod === "GET") // GET
@@ -55,24 +56,29 @@ exports.handler = async function(event, context, callback) {
         filterByFormula: `{Address} = '${address.toLowerCase()}'`
       }).firstPage((err, records) => {
         records.forEach(record => {
-          return callback(null, {
+          return {
             statusCode: 200,
             body: JSON.stringify({ ID: record.get('ID') })
-          })
+          }
         })
       })
     else {
-      const ID = await getIdByAddress(base, address.toLowerCase())
-      if (ID) {
-        base('Owners').update(ID, {
-          "Address": address.toLowerCase(),
-          "Email": email,
-          "Phone Number": phoneNumber
-        })
-        callback(null, {
+      const recordOwner = await getIdByAddress(base, address.toLowerCase())
+
+      if (recordOwner) {
+        base('Owners').update([{
+          "id": recordOwner.ID,
+          "fields": {
+            "Address": address.toLowerCase(),
+            "Email": email,
+            "Phone Number": phoneNumber
+          }
+        }])
+
+        return {
           statusCode: 200,
-          body: JSON.stringify({ result: "Settings updated" })
-        })
+          body: JSON.stringify({ result: CONSTANTS.LAMBDA__SETTINGS_UPDATED })
+        }
       } else { // New Entry
         base('Owners').create({
           "Address": address.toLowerCase(),
@@ -80,17 +86,17 @@ exports.handler = async function(event, context, callback) {
           "Phone Number": phoneNumber
         })
 
-        callback(null, {
+        return {
           statusCode: 200,
-          body: JSON.stringify({ result: "Settings added" })
-        })
+          body: JSON.stringify({ result: CONSTANTS.LAMBDA__SETTINGS_ADDED })
+        }
       }
     }
   } catch (err) {
     console.error(err)
-    callback(null, {
+    return {
       statusCode: 500,
       body: JSON.stringify({ err })
-    })
+    }
   }
 }
