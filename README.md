@@ -16,7 +16,7 @@ The Recover dApp user interface.
 
 1.  Clone this repository.
 2.  Install and set up the [MetaMask](https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=en) chrome extension.
-3.  Configure MetaMask on the Kovan Test Network.
+3.  Configure MetaMask on the Kovan Testnet or the Mainnet Network.
 4.  `cp .airtable.development .airtable # and set the ids`
 5.  Configure the environment variables in `.env.development` and rename it `mv .env.development .env`.
 6.  (Optional) Configure the Airtable keys in `.airtable.development` and rename it `mv .airtable.development .airtable`.
