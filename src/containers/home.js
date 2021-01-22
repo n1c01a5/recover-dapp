@@ -166,7 +166,7 @@ const Home = ({ network, contract }) => {
         focusTrapped={false}
         center
         styles={{
-          closeButton: { background: 'transparent' },
+          closeButton: { background: 'transparent', border: 'none' },
           modal: {
             width: '80vw',
             maxWidth: '400px',

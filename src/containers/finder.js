@@ -358,7 +358,7 @@ const Finder = ({network, contract, claimID}) => {
             onClose={() => setOpen(false)}
             center
             styles={{
-              closeButton: { background: 'transparent' },
+              closeButton: { background: 'transparent', border: 'none' },
               modal: { width: '80vw', maxWidth: '300px', padding: '6vh 8vw' }
             }}
           >

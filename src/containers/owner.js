@@ -643,8 +643,8 @@ const Owner = ({network, contract, itemID}) => {
             onClose={() => setOpen(false)}
             center
             styles={{
-              closeButton: {background: 'transparent'},
-              modal: {width: '80vw', maxWidth: '300px', padding: '6vh 8vw'}
+              closeButton: { background: 'transparent', border: 'none' },
+              modal: { width: '80vw', maxWidth: '300px', padding: '6vh 8vw' }
             }}
           >
             <ModalTitle>Evidence</ModalTitle>

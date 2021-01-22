@@ -296,7 +296,7 @@ const New = ({network, contract, itemID, pk}) => {
         focusTrapped={false}
         center
         styles={{
-          closeButton: { background: 'transparent' },
+          closeButton: { background: 'transparent', border: 'none' },
           modal: {
             width: '80vw',
             maxWidth: '400px',
@@ -335,7 +335,7 @@ const New = ({network, contract, itemID, pk}) => {
         focusTrapped={false}
         center
         styles={{
-          closeButton: { background: 'transparent' },
+          closeButton: { background: 'transparent', border: 'none' },
           modal: {
             width: '80vw',
             maxWidth: '400px',
@@ -590,7 +590,7 @@ const New = ({network, contract, itemID, pk}) => {
                   onClose={() => setOpen(false)}
                   center
                   styles={{
-                    closeButton: { background: 'transparent' },
+                    closeButton: { background: 'transparent', border: 'none' },
                     modal: {
                       width: '80vw',
                       maxWidth: '300px',
