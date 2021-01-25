@@ -121,22 +121,14 @@ const Settings = ({ network, contract }) => {
       fundClaims,
       timeoutLocked
     }) => {
-      console.log({
-        address,
-        signMsg,
-        email,
-        phoneNumber,
-        fundClaims,
-        timeoutLocked
-      })
       fetch('/.netlify/functions/settings', {
         method: 'POST',
         body: JSON.stringify({
           network,
           address,
           signMsg,
-          email: email || (recover[drizzleState.ID] && recover[drizzleState.ID].email) || '',
-          phoneNumber: phoneNumber || (recover[drizzleState.ID] && recover[drizzleState.ID].phoneNumber) || '',
+          email: email !== '' ? email : '',
+          phoneNumber: phoneNumber !== '' ? phoneNumber : ''
         })
       })
       .then(res => res.json())

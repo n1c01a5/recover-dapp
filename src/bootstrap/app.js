@@ -15,7 +15,7 @@ const Nav = () => {
   const [isTop, setTop] = useState(true)
   const [network, setNetwork] = useState('mainnet')
   // TODO: add logic to set up the contract
-  const [contract, setContract] = useState(process.env.REACT_APP_RECOVER_MAINNET_ADDRESS)
+  const [contract] = useState(process.env.REACT_APP_RECOVER_MAINNET_ADDRESS)
 
   useEffect(() => {
     const urlSplitArray = window.location.href.split('/')
