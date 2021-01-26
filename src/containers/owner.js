@@ -12,8 +12,8 @@ import {
 } from 'styled-dropdown-component'
 import { navigate } from '@reach/router'
 import Modal from 'react-responsive-modal'
+import { drizzleReactHooks } from '@drizzle/react-plugin'
 
-import { useDrizzle, useDrizzleState } from '../temp/drizzle-react-hooks'
 import Button from '../components/button'
 import ETHAmount from '../components/eth-amount'
 import { useDataloader } from '../bootstrap/dataloader'
@@ -23,6 +23,8 @@ import ReadFile from '../utils/read-file'
 import Attachment from '../components/attachment'
 
 import { ReactComponent as Settings } from '../assets/images/settings-orange.svg'
+
+const { useDrizzle, useDrizzleState } = drizzleReactHooks
 
 const Container = styled.div`
   font-family: Nunito;

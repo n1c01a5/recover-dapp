@@ -5,11 +5,13 @@ import { Router, navigate, Link } from '@reach/router'
 import styled from 'styled-components/macro'
 import { BeatLoader } from 'react-spinners'
 import { slide as Menu } from 'react-burger-menu'
+import { drizzleReactHooks } from '@drizzle/react-plugin'
 
 import drizzle from './drizzle'
 import { register } from './service-worker'
 import { ArchonInitializer } from './archon'
-import { DrizzleProvider, Initializer } from '../temp/drizzle-react-hooks'
+
+const { DrizzleProvider, Initializer } = drizzleReactHooks
 
 const Nav = () => {
   const [isTop, setTop] = useState(true)

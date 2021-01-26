@@ -8,8 +8,8 @@ import Modal from 'react-responsive-modal'
 import { navigate } from '@reach/router'
 import ReactPhoneInput from 'react-phone-input-2'
 import Webcam from 'react-webcam'
+import { drizzleReactHooks } from '@drizzle/react-plugin'
 
-import { useDrizzle, useDrizzleState } from '../temp/drizzle-react-hooks'
 import Button from '../components/button'
 import MessageBoxTx from '../components/message-box-tx'
 import ipfsPublish from './api/ipfs-publish'
@@ -17,7 +17,9 @@ import generateMetaEvidence from '../utils/generate-meta-evidence'
 
 import 'react-phone-input-2/lib/style.css'
 
-import qrCode from '../assets/images/qr-code.png'
+import qrCode from '../assets/images/qr-code.png' // TODO: feature to add.
+
+const { useDrizzle, useDrizzleState } = drizzleReactHooks
 
 const Container = styled.div`
   font-family: Nunito;

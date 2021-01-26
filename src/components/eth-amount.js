@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { useDrizzle } from '../temp/drizzle-react-hooks'
+import { drizzleReactHooks } from '@drizzle/react-plugin'
+
+const { useDrizzle } = drizzleReactHooks
 
 const ETHAmount = ({ amount, decimals }) => {
   const { drizzle } = useDrizzle()

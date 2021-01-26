@@ -6,8 +6,8 @@ import Textarea from 'react-textarea-autosize'
 import Modal from 'react-responsive-modal'
 import { Formik, Field, ErrorMessage } from 'formik'
 import { navigate } from '@reach/router'
+import { drizzleReactHooks } from '@drizzle/react-plugin'
 
-import { useDrizzle, useDrizzleState } from '../temp/drizzle-react-hooks'
 import ETHAmount from '../components/eth-amount'
 import { useDataloader } from '../bootstrap/dataloader'
 import ipfsPublish from './api/ipfs-publish'
@@ -16,6 +16,8 @@ import ReadFile from '../utils/read-file'
 import Button from '../components/button'
 
 import { ReactComponent as Settings } from '../assets/images/settings.svg'
+
+const { useDrizzle, useDrizzleState } = drizzleReactHooks
 
 const Container = styled.div`
   font-family: Nunito;

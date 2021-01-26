@@ -4,12 +4,14 @@ import styled from 'styled-components/macro'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import { navigate } from '@reach/router'
 import ReactPhoneInput from 'react-phone-input-2'
+import { drizzleReactHooks } from '@drizzle/react-plugin'
 
-import { useDrizzle, useDrizzleState } from '../temp/drizzle-react-hooks'
 import CONSTANTS from '../constants'
 import Button from '../components/button'
 
 import 'react-phone-input-2/lib/style.css'
+
+const { useDrizzle, useDrizzleState } = drizzleReactHooks
 
 const Box = styled.div`
   display: flex;

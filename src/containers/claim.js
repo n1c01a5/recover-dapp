@@ -6,13 +6,15 @@ import Textarea from 'react-textarea-autosize'
 import Web3 from 'web3'
 import EthCrypto from 'eth-crypto'
 import { navigate } from '@reach/router'
+import { drizzleReactHooks } from '@drizzle/react-plugin'
 
-import { useDrizzle, useDrizzleState } from '../temp/drizzle-react-hooks'
 import Button from '../components/button'
 import ETHAmount from '../components/eth-amount'
 import { useDataloader } from '../bootstrap/dataloader'
 import MessageBoxTx from '../components/message-box-tx'
 import ipfsPublish from './api/ipfs-publish'
+
+const { useDrizzle, useDrizzleState } = drizzleReactHooks
 
 const Container = styled.div`
   font-family: Nunito;

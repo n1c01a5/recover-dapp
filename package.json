@@ -37,6 +37,8 @@
     "standard-version": "^8.0.0"
   },
   "dependencies": {
+    "@drizzle/react-plugin": "^1.5.3",
+    "@drizzle/store": "^1.5.3",
     "@kleros/archon": "^0.6.0",
     "@loadable/component": "^5.5.0",
     "@reach/router": "^1.2.1",
@@ -45,7 +47,6 @@
     "dataloader": "^1.4.0",
     "debounce": "^1.2.0",
     "dotenv": "^8.0.0",
-    "drizzle": "simondlr/drizzle#web3mod",
     "eth-crypto": "^1.3.4",
     "eth-sig-util": "^3.0.0",
     "formik": "^1.5.1",
