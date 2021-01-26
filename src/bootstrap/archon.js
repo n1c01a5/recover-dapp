@@ -13,7 +13,7 @@ export const ArchonInitializer = ({ children }) => {
   const { drizzle } = useDrizzle()
 
   useEffect(() => {
-    // drizzle.web3 && archon.setProvider(drizzle.web3.currentProvider)
+    drizzle.web3 && archon.setProvider(drizzle.web3.currentProvider)
   }, [
     drizzle.web3
   ])
