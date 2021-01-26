@@ -177,9 +177,7 @@ const Claim = ({ network, contract, itemID_Pk }) => {
   const claim = useCallback(async ({ finder, email, description }) => {
     const web3 = new Web3(
       new Web3.providers.HttpProvider(
-        `https://${
-          drizzleState.networkID === '42' ? 'kovan' : 'mainnet'
-        }.infura.io/v3/846256afe0ee40f0971d902ea8d36266`
+        drizzleState.networkID === '42' ? process.env.REACT_APP_WEB3_KOVAN_FALLBACK_URL : process.env.REACT_APP_WEB3_MAINNET_FALLBACK_URL
       ),
       {
         defaultBlock: 'latest',
