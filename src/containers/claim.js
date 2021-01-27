@@ -1,20 +1,18 @@
 import PropTypes from 'prop-types'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components/macro'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import Textarea from 'react-textarea-autosize'
 import Web3 from 'web3'
 import EthCrypto from 'eth-crypto'
 import { navigate } from '@reach/router'
-import { drizzleReactHooks } from '@drizzle/react-plugin'
 
 import Button from '../components/button'
 import ETHAmount from '../components/eth-amount'
 import { useDataloader } from '../bootstrap/dataloader'
 import MessageBoxTx from '../components/message-box-tx'
 import ipfsPublish from './api/ipfs-publish'
-
-const { useDrizzle, useDrizzleState } = drizzleReactHooks
+import RecoverABI from '../assets/contracts/recover.json'
 
 const Container = styled.div`
   font-family: Nunito;
@@ -159,42 +157,44 @@ const Error = styled.div`
 `
 
 const Claim = ({ network, contract, itemID_Pk }) => {
-  const { drizzle, useCacheCall } = useDrizzle()
-  const drizzleState = useDrizzleState(drizzleState => ({
-    account:
-      drizzleState.accounts[0] || '0x0000000000000000000000000000000000000000',
-    networkID: drizzleState.web3.networkId
-      ? drizzleState.web3.networkId.toString()
-      : '1',
-    web3: drizzleState.web3
-  }))
+  const [ethereum] = useState(
+    new Web3(
+      network === 'kovan' ? process.env.REACT_APP_WEB3_KOVAN_FALLBACK_URL : process.env.REACT_APP_WEB3_MAINNET_FALLBACK_URL
+    )
+  )
+
   const [isClaim, setClaim] = useState(false)
+  const [item, setItem] = useState()
   const [wallet] = useState(EthCrypto.createIdentity())
   const [isAdvanced, setIsAdvanced] = useState(false)
 
   const [itemID, privateKey] = itemID_Pk.split('-privateKey=')
 
-  const item = useCacheCall('Recover', 'items', itemID.padEnd(66, '0'))
+  // const item = useCacheCall('Recover', 'items', itemID.padEnd(66, '0'))
+
+  useEffect(() => {
+    if(ethereum && ethereum.eth) {
+      const RecoverEth = new ethereum.eth.Contract(
+        RecoverABI.abi,
+        network === 'kovan'
+          ? process.env.REACT_APP_RECOVER_KOVAN_ADDRESS
+          : process.env.REACT_APP_RECOVER_MAINNET_ADDRESS
+      )
+
+      const getItem = async () => await RecoverEth.methods.items(itemID.padEnd(66, '0')).call()
+
+      getItem().then(item => setItem(item))
+    }
+  }, [ethereum])
 
   const claim = useCallback(async ({ finder, email, description }) => {
-    const web3 = new Web3(
-      new Web3.providers.HttpProvider(
-        drizzleState.networkID === '42' ? process.env.REACT_APP_WEB3_KOVAN_FALLBACK_URL : process.env.REACT_APP_WEB3_MAINNET_FALLBACK_URL
-      ),
-      {
-        defaultBlock: 'latest',
-        transactionConfirmationBlocks: 1,
-        transactionBlockTimeout: 5
-      }
-    )
-
     if (!isClaim) {
       setClaim(true)
 
       await fetch('/.netlify/functions/claims', {
         method: 'post',
         body: JSON.stringify({
-          network: drizzleState.networkID === '42' ? 'KOVAN' : 'MAINNET',
+          network: network.toUpperCase(),
           addressOwner: item.owner,
           addressFinder: finder,
           itemID: itemID,
@@ -239,21 +239,23 @@ const Claim = ({ network, contract, itemID_Pk }) => {
         ipfsHashMetaEvidenceObj[1].hash
       }${ipfsHashMetaEvidenceObj[0].path}`
 
-      const encodedABI = drizzle.contracts.Recover.methods
+      const RecoverEth = new ethereum.eth.Contract(RecoverABI.abi, network === 'kovan' ? process.env.REACT_APP_RECOVER_KOVAN_ADDRESS : process.env.REACT_APP_RECOVER_MAINNET_ADDRESS)
+
+      const encodedABI = RecoverEth.methods
         .claim(itemID.padEnd(66, '0'), finder, descriptionEncryptedIpfsUrl)
         .encodeABI()
 
-      await web3.eth.accounts
+      await ethereum.eth.accounts
         .signTransaction(
           {
-            to: drizzle.contracts.Recover.address,
+            to: network === 'kovan' ? process.env.REACT_APP_RECOVER_KOVAN_ADDRESS : process.env.REACT_APP_RECOVER_MAINNET_ADDRESS,
             gas: 255201, // TODO: compute the gas cost before
             data: encodedABI
           },
           privateKey
         )
         .then(signTransaction => {
-          web3.eth
+          ethereum.eth
             .sendSignedTransaction(
               signTransaction.rawTransaction.toString('hex')
             )
@@ -326,7 +328,7 @@ const Claim = ({ network, contract, itemID_Pk }) => {
       )}
       <Formik
         initialValues={{
-          finder: '', // NOTE: type should be an address
+          finder: '', // NOTE: type should be an address. Use FinderAddr.
           email: '',
           description: ''
         }}
@@ -336,7 +338,7 @@ const Claim = ({ network, contract, itemID_Pk }) => {
           if (isAdvanced) {
             if (!values.finder)
               errors.finder = 'Address Required'
-            if (!drizzle.web3.utils.isAddress(values.finder))
+            if (!ethereum.utils.isAddress(values.finder))
               errors.finder = 'Valid Address Required'
           } else {
             values.finder = wallet.address

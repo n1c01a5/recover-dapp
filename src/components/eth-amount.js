@@ -9,7 +9,13 @@ const ETHAmount = ({ amount, decimals }) => {
   return amount === null ||  amount === undefined ? (
     <span>?</span>
   ) : (
-    Number(drizzle.web3.utils.fromWei(String(amount))).toFixed(decimals)
+    Number(
+      drizzle.web3.utils.fromWei(
+        typeof amount === 'number'
+          ? amount.toLocaleString('fullwide', { useGrouping: false })
+          : String(amount)
+      )
+    ).toFixed(decimals)
   )
 }
 
