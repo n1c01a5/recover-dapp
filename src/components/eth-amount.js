@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import web3 from 'web3'
+import {default as ethereum} from 'web3'
 
 const ETHAmount = ({ amount, decimals }) => {
   return amount === null ||  amount === undefined ? (
     <span>?</span>
   ) : (
     Number(
-      web3.utils.fromWei(
+      ethereum.utils.fromWei(
         typeof amount === 'number'
           ? amount.toLocaleString('fullwide', { useGrouping: false })
           : String(amount)
