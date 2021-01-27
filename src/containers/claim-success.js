@@ -1,8 +1,10 @@
 import React from 'react'
 import styled from 'styled-components/macro'
 
-import { useDrizzle } from '../temp/drizzle-react-hooks'
+import { drizzleReactHooks } from '@drizzle/react-plugin'
 import { useDataloader } from '../bootstrap/dataloader'
+
+const { useDrizzle } = drizzleReactHooks
 
 const Container = styled.div`
   font-family: Nunito;

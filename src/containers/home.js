@@ -4,10 +4,12 @@ import styled from 'styled-components/macro'
 import Dotdotdot from 'react-dotdotdot'
 import Modal from 'react-responsive-modal'
 import { navigate } from '@reach/router'
+import { drizzleReactHooks } from '@drizzle/react-plugin'
 
 import { useDataloader } from '../bootstrap/dataloader'
-import { useDrizzle, useDrizzleState } from '../temp/drizzle-react-hooks'
 import CardItem from '../components/card-item'
+
+const { useDrizzle, useDrizzleState } = drizzleReactHooks
 
 const ModalTitle = styled.h3`
   font-family: Nunito;

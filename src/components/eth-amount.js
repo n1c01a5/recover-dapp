@@ -1,13 +1,18 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { useDrizzle } from '../temp/drizzle-react-hooks'
+import {default as ethereum} from 'web3'
 
 const ETHAmount = ({ amount, decimals }) => {
-  const { drizzle } = useDrizzle()
   return amount === null ||  amount === undefined ? (
     <span>?</span>
   ) : (
-    Number(drizzle.web3.utils.fromWei(String(amount))).toFixed(decimals)
+    Number(
+      ethereum.utils.fromWei(
+        typeof amount === 'number'
+          ? amount.toLocaleString('fullwide', { useGrouping: false })
+          : String(amount)
+      )
+    ).toFixed(decimals)
   )
 }
 
