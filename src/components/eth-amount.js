@@ -1,16 +1,13 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { drizzleReactHooks } from '@drizzle/react-plugin'
-
-const { useDrizzle } = drizzleReactHooks
+import web3 from 'web3'
 
 const ETHAmount = ({ amount, decimals }) => {
-  const { drizzle } = useDrizzle()
   return amount === null ||  amount === undefined ? (
     <span>?</span>
   ) : (
     Number(
-      drizzle.web3.utils.fromWei(
+      web3.utils.fromWei(
         typeof amount === 'number'
           ? amount.toLocaleString('fullwide', { useGrouping: false })
           : String(amount)
