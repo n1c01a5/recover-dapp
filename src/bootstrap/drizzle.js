@@ -23,16 +23,15 @@ const options = {
   polls: {
     accounts: 3000,
     blocks: 3000
-  }
-}
-
-if (process.env.REACT_APP_WEB3_MAINNET_FALLBACK_URL)
-  options.web3 = process.env.REACT_APP_WEB3_MAINNET_FALLBACK_URL && {
+  },
+  web3: {
     fallback: {
+      type: 'ws',
       // FIXME: switch to the kovan fallback if the app uses the kovan network
       // For this, we need to compute the network before the execution of this file.
       url: process.env.REACT_APP_WEB3_MAINNET_FALLBACK_URL
     }
   }
+}
 
 export default new Drizzle(options, generateStore(options))
