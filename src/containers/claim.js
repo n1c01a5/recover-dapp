@@ -6,6 +6,7 @@ import Textarea from 'react-textarea-autosize'
 import Web3 from 'web3'
 import EthCrypto from 'eth-crypto'
 import { navigate } from '@reach/router'
+import { drizzleReactHooks } from '@drizzle/react-plugin'
 
 import Button from '../components/button'
 import ETHAmount from '../components/eth-amount'
@@ -13,6 +14,8 @@ import { useDataloader } from '../bootstrap/dataloader'
 import MessageBoxTx from '../components/message-box-tx'
 import ipfsPublish from './api/ipfs-publish'
 import RecoverABI from '../assets/contracts/recover.json'
+
+const { useDrizzleState } = drizzleReactHooks
 
 const Container = styled.div`
   font-family: Nunito;
@@ -169,6 +172,16 @@ const Claim = ({ network, contract, itemID_Pk }) => {
   const [isAdvanced, setIsAdvanced] = useState(false)
 
   const [itemID, privateKey] = itemID_Pk.split('-privateKey=')
+
+  const drizzleState = useDrizzleState(drizzleState => ({
+    account: drizzleState.accounts[0]
+      ? drizzleState.accounts[0].toString()
+      : '0x0000000000000000000000000000000000000000',
+    networkID: drizzleState.web3.networkId
+      ? drizzleState.web3.networkId.toString()
+      : '1',
+    transactions: drizzleState.transactions
+  }))
 
   useEffect(() => {
     if(ethereum && ethereum.eth) {
