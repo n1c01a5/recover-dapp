@@ -170,8 +170,6 @@ const Claim = ({ network, contract, itemID_Pk }) => {
 
   const [itemID, privateKey] = itemID_Pk.split('-privateKey=')
 
-  // const item = useCacheCall('Recover', 'items', itemID.padEnd(66, '0'))
-
   useEffect(() => {
     if(ethereum && ethereum.eth) {
       const RecoverEth = new ethereum.eth.Contract(
