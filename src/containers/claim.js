@@ -157,7 +157,7 @@ const Error = styled.div`
 `
 
 const Claim = ({ network, contract, itemID_Pk }) => {
-  const [ethereum] = useState(
+  const [ethereum] = useState( // FIXME: do we need the `useState()`?
     new Web3(
       network === 'kovan' ? process.env.REACT_APP_WEB3_KOVAN_FALLBACK_URL : process.env.REACT_APP_WEB3_MAINNET_FALLBACK_URL
     )
@@ -183,7 +183,7 @@ const Claim = ({ network, contract, itemID_Pk }) => {
 
       getItem().then(item => setItem(item))
     }
-  }, [ethereum])
+  }, [ethereum.eth.net])
 
   const claim = useCallback(async ({ finder, email, description }) => {
     if (!isClaim) {
@@ -211,7 +211,7 @@ const Claim = ({ network, contract, itemID_Pk }) => {
           ...JSON.parse(localStorage.getItem('recover') || '{}'),
           [itemID]: {
             finder,
-            privateKey // to decode the metaevidence
+            privateKey // to decode the meta-evidence
           }
         })
       )
@@ -224,7 +224,7 @@ const Claim = ({ network, contract, itemID_Pk }) => {
       const enc = new TextEncoder()
 
       // Upload the finder description encrypted to IPFS
-      const ipfsHashMetaEvidenceObj = await ipfsPublish(
+      const ipfsHashMetaEvidenceObj = await ipfsPublish( // FIXME: it's not a metaEvidence it's just data to explicit the claim.
         'claim.json',
         enc.encode(
           JSON.stringify({
@@ -276,7 +276,7 @@ const Claim = ({ network, contract, itemID_Pk }) => {
     navigate(`
       /network/${network}/contract/${contract}/new/items/${itemID}/pk/${privateKey}
     `)
-  } else if ( // load metaevidence
+  } else if ( // load meta-evidence
     item !== undefined
     && item.descriptionEncryptedLink !== undefined
     && privateKey
