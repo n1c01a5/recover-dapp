@@ -18,8 +18,8 @@ const Nav = () => {
   const [network, setNetwork] = useState('mainnet')
   // TODO: add logic to set up the contract
   const [contract] = useState(
-    network === 'kovan' 
-      ? process.env.REACT_APP_RECOVER_KOVAN_ADDRESS 
+    network === 'kovan'
+      ? process.env.REACT_APP_RECOVER_KOVAN_ADDRESS
       : process.env.REACT_APP_RECOVER_MAINNET_ADDRESS
   )
 
@@ -51,6 +51,17 @@ const Nav = () => {
       <Menu right>
         <Link to={`/network/${network}/contract/${contract}`} className="menu-item">
           HOME
+        </Link>
+        <Link
+          to={
+            `/network/${network}/contract/${contract}/non-fungible-tokens/${network === 'kovan' 
+              ? process.env.REACT_APP_NON_FUNGIBLE_TOKENS_KOVAN_ADDRESS 
+              : process.env.REACT_APP_NON_FUNGIBLE_TOKENS_MAINNET_ADDRESS
+            }`
+          }
+          className="menu-item"
+        >
+          LOSER BOX
         </Link>
         <Link to={`/network/${network}/contract/${contract}/new/items/undefined/pk/undefined`} className="menu-item">
           ADD ITEM
@@ -146,6 +157,26 @@ const Settings = loadable(
     )
   }
 )
+const NonFungibleTokens = loadable(
+  () => import(/* webpackPrefetch: true */ '../containers/non-fungible-tokens'),
+  {
+    fallback: (
+      <ContainerLoader>
+        <BeatLoader color={'#fff'} />
+      </ContainerLoader>
+    )
+  }
+)
+const Token = loadable(
+  () => import(/* webpackPrefetch: true */ '../containers/non-fungible-tokens/token'),
+  {
+    fallback: (
+      <ContainerLoader>
+        <BeatLoader color={'#fff'} />
+      </ContainerLoader>
+    )
+  }
+)
 const C404 = loadable(
   () => import(/* webpackPrefetch: true */ '../containers/404'),
   {
@@ -187,6 +218,8 @@ export default () => (
               <Finder path="network/:network/contract/:contract/claims/:claimID" />
               <ClaimSuccess path="network/:network/contract/:contract/items/:itemID/pk/:pk/claim-success" />
               <Claim path="network/:network/contract/:contract/items/:itemID_Pk" />
+              <NonFungibleTokens path="network/:network/contract/:contract/non-fungible-tokens/:nonFungibleTokens" />
+              <Token path="network/:network/contract/:contract/non-fungible-tokens/:nonFungibleTokens/tokens/:tokenID" />
               <C404 default />
             </Main>
           </Router>

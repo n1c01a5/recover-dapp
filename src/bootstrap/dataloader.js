@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Dataloader from 'dataloader'
 import EthCrypto from 'eth-crypto'
+
 import archon from './archon'
 
 const funcs = {
@@ -21,7 +22,7 @@ const funcs = {
           }
         )
       )
-      .catch(() => null),
+      .catch(console.error),
   getMetaEvidence: (contractAddress, arbitratorAddress, disputeID, options) =>
     archon.arbitrable
       .getDispute(contractAddress, arbitratorAddress, disputeID, {
@@ -34,7 +35,7 @@ const funcs = {
           ...options
         })
       )
-      .catch(() => null),
+      .catch(console.error),
   load: (URI, options) =>
     archon.utils
       .validateFileFromURI(URI, {
@@ -42,18 +43,23 @@ const funcs = {
         ...options
       })
       .then(res => res.file)
-      .catch(() => null),
+      .catch(console.error),
   getDescription: (descriptionEncryptedLink, privateKey) =>
-    fetch(`https://ipfs.kleros.io/${descriptionEncryptedLink}`)
+    fetch(`https://ipfs.kleros.io/${descriptionEncryptedLink}`) // FIXME: use Pinata or own node.
       .then(res => res.json())
-      .then(async data => {
+      .then(async data => { // FIXME: use then() instead of async/await !
         const dataDecrypted = await EthCrypto.decryptWithPrivateKey(
           privateKey,
           EthCrypto.cipher.parse(data.dataEncrypted)
         )
+
         return {...data, dataDecrypted: JSON.parse(dataDecrypted)}
       })
-      .catch(() => null)
+      .catch(console.error),
+  getDataToken: (tokenURI) =>
+    fetch(`https://${process.env.REACT_APP_NON_FUNGIBLE_TOKENS_IPFS_NODE_URL}${tokenURI}`)
+      .then(res => res.json())
+      .catch(console.error)
 }
 export const dataloaders = Object.keys(funcs).reduce((acc, f) => {
   acc[f] = new Dataloader(

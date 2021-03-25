@@ -1,10 +1,10 @@
 import Airtable from 'airtable'
 import fs from 'fs'
 import dotenv from 'dotenv'
-var sigUtil = require('eth-sig-util') // NOTE: eth-sig-util does not support `import`.
+import * as sigUtil from 'eth-sig-util'
 
 import CONSTANTS from '../constants'
-import getIdByAddress from '../utils/getIdByAddress'
+import getIdByAddress from '../utils/get-id-by-address'
 
 // TODO: move to utils folder
 // Set up airtable envs in the development envirronement.

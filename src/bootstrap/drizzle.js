@@ -2,6 +2,7 @@ import { Drizzle, generateStore } from '@drizzle/store'
 
 import Recover from '../assets/contracts/recover.json'
 import KlerosLiquid  from '../assets/contracts/kleros-liquid.json'
+import NonFungibleTokens  from '../assets/contracts/non-fungible-tokens.json'
 
 const options = {
   contracts: [
@@ -17,6 +18,13 @@ const options = {
       networks: {
         1: { address: process.env.REACT_APP_ARBITRATOR_MAINNET_ADDRESS },
         42: { address: process.env.REACT_APP_ARBITRATOR_KOVAN_ADDRESS }
+      }
+    },
+    {
+      ...NonFungibleTokens,
+      networks: {
+        1: { address: process.env.REACT_APP_NON_FUNGIBLE_TOKENS_MAINNET_ADDRESS },
+        42: { address: process.env.REACT_APP_NON_FUNGIBLE_TOKENS_KOVAN_ADDRESS }
       }
     }
   ],

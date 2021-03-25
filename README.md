@@ -35,3 +35,7 @@ The QrCode without `web3` (MetaMask) works only on the mainnet network (because 
 - `yarn run cz` - Run commitizen.
 - `yarn run build` - Create a production build.
 - `yarn run build:analyze` - Analyze the production build using source-map-explorer.
+
+## Deploy NFTs on IPFS
+
+See [IPFS](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs).

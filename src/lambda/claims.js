@@ -2,7 +2,7 @@ import Airtable from 'airtable'
 import fs from 'fs'
 import dotenv from 'dotenv'
 
-import getIdByAddress from '../utils/getIdByAddress'
+import getIdByAddress from '../utils/get-id-by-address'
 
 // TODO: move to utils folder
 // Set up airtable envs in the development environnement.

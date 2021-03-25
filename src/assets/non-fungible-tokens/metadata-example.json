@@ -1,0 +1,47 @@
+{
+    "title": "Loser Box",
+    "type": "object",
+    "properties": { 
+      "name": {
+        "type": "string",
+        "description": "Identifies the asset to which this NFT represents" 
+      },
+      "description": {
+        "type": "string",
+        "description": "Loser Box to lose and recover your items. Buidl top on Ethereum / Kleros / IPFS." 
+      },
+      "items": {
+        "<idItemXSmartcontract>": {
+          "<model>": {
+            "type": "string",
+            "description": "key ring" 
+          },
+          "details": {
+            "type": "string",
+            "description": "house key..." 
+          }
+        },
+        "<idItemYSmartcontract>": {
+          "<model>": {
+            "type": "string",
+            "description": "card" 
+          },
+          "details": {
+            "type": "string",
+            "description": "wallet.." 
+          }
+        },
+        "<idItemZSmartcontract>": {
+          "<model>": {
+            "type": "string",
+            "description": "small sticker" 
+          },
+          "details": {
+            "type": "string",
+            "description": "Ledger.." 
+          }
+        }
+      }
+    }
+  }
+  

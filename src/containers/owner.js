@@ -251,8 +251,8 @@ const StyledTextarea = styled(Textarea)`
   margin: 20px 0 40px 0;
   width: 100%;
   display: block;
-  background: #FFFFFF;
-  border: 1px solid #CCCCCC;
+  background: #fff;
+  border: 1px solid #ccc;
   box-sizing: border-box;
   border-radius: 5px;
   min-height: 11em;
