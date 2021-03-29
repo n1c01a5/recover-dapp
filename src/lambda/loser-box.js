@@ -3,7 +3,6 @@ import fs from 'fs'
 import dotenv from 'dotenv'
 import * as sigUtil from 'eth-sig-util'
 import * as ethUtil from 'ethereumjs-util'
-// import Web3 from 'web3'
 
 import getLoserBoxNftByID from '../utils/get-loser-box-nft-by-id'
 
@@ -30,10 +29,6 @@ exports.handler = async function(event) {
   const network = event.queryStringParameters.network.toUpperCase() || "MAINNET"
   const msgParams = JSON.parse(decodeURI(event.queryStringParameters.msgParams)) || {}
   const signatureNFTID = event.queryStringParameters.signatureNFTID || ""
-
-  console.log({tokenID})
-  console.log({msgParams})
-  console.log({signatureNFTID})
 
   const base = new Airtable({ apiKey: AIRTABLE_API_KEY })
     .base(process.env[`AIRTABLE_${network}_BASE`])

@@ -14,6 +14,8 @@ import MessageBox from '../../components/message-box'
 import Button from '../../components/button'
 import { useDataloader } from '../../bootstrap/dataloader'
 import generateMsgParamsNFT from '../../utils/generate-msg-params-nft'
+import nonFungibleLoserBoxTokenContractABI from '../../assets/contracts/non-fungible-tokens.json'
+import recoverContractABI from '../../assets/contracts/recover.json'
 
 const { useDrizzle, useDrizzleState } = drizzleReactHooks
 
@@ -51,11 +53,13 @@ const Token = ({ network, contract, nonFungibleTokens, tokenID }) => {
   const recoverLS = JSON.parse(localStorage.getItem('recover') || '{}')
   const loserBoxNFTPksByToken = recoverLS
 
-  const [isModalOpen, setIsModalOpen] = useState(true)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [isMMOpen, setMMOpen] = useState(false)
   const [isNFTSignatureRejected, setIsNFTSignatureRejected] = useState(false)
   const [privateKeysNFT, setPrivateKeysNFT] = useState(null)
   const [isAlreadyAskForSign, setIsAlreadyAskForSign] = useState(false)
+  const [loserBoxTokenURI, setLoserBoxTokenURI] = useState(null)
+  const [arrayIsItem, setArrayIsItem] = useState([])
   const [ethereum] = useState( // FIXME: do we need the `useState()`?
     new Web3(Web3.givenProvider)
   )
@@ -82,101 +86,57 @@ const Token = ({ network, contract, nonFungibleTokens, tokenID }) => {
       setMMOpen(true)
   }, [drizzleState])
 
-  // useEffect(()=> { // FIXME: 111
-  //   if (signatureNFTID)
-  //     window.localStorage.setItem(
-  //       'recover',
-  //       JSON.stringify({
-  //         ...JSON.parse(localStorage.getItem('recover') || '{}'),
-  //         // `loserBoxNFT-${tokenID}`: {...}
-  //       })
-  //     )
-  // }, [])
+  useEffect(() => {
+    if(loserBoxNFTPksByToken && loserBoxNFTPksByToken.loserBoxNFTPks && loserBoxNFTPksByToken.loserBoxNFTPks[tokenID]) {
+      setPrivateKeysNFT(loserBoxNFTPksByToken.loserBoxNFTPks[tokenID])
+      setIsModalOpen(false)
+    } else {
+      setIsModalOpen(true)
+    }
+  }, [])
 
-  // useEffect(() => {
-  //   if(ethereum && ethereum.eth) {
-  //     async function signNFTID() {
+  useEffect(() => {
+    const checkItemIfRegistered = async () => {
+      const nonFungibleLoserBoxTokenContractAddress = network === 'kovan' 
+        ? process.env.REACT_APP_NON_FUNGIBLE_TOKENS_KOVAN_ADDRESS
+        : process.env.REACT_APP_NON_FUNGIBLE_TOKENS_MAINNET_ADDRESS
 
-  //       const chainId = network === 'kovan' ? 42 : 1
-  //       const accounts = await ethereum.eth.getAccounts()
+      const recoverContractAddress = network === 'kovan' 
+        ? process.env.REACT_APP_RECOVER_KOVAN_ADDRESS
+        : process.env.REACT_APP_RECOVER_MAINNET_ADDRESS
 
-  //       const domainType = [     
-  //         { name: "name", type: "string" },     
-  //         { name: "version", type: "string" },
-  //         { name: "salt", type: "bytes32"}
-  //       ]
-  //       const messageType = [
-  //         { name: "tokenID", type: "string" }
-  //       ]
-  //       const domainData = {
-  //         name: "Loser Box NFT",
-  //         version: "1",
-  //         salt: '0x' + chainId.toString(16).padStart(64, '0')
-  //       }
+      const nonFungibleLoserBoxTokenContract = new ethereum.eth.Contract(nonFungibleLoserBoxTokenContractABI.abi, nonFungibleLoserBoxTokenContractAddress)
+      const recoverContract = new ethereum.eth.Contract(recoverContractABI.abi, recoverContractAddress)
 
-  //       const msgParams = {
-  //         types: {
-  //           EIP712Domain: domainType,
-  //           Message: messageType
-  //         },
-  //         domain: domainData,
-  //         primaryType: "Message",
-  //         message: {
-  //           tokenID
-  //         }
-  //       }
+      const loserBoxTokenURIResponse = await nonFungibleLoserBoxTokenContract.methods.tokenURI(tokenID).call()
 
-  //       await ethereum.currentProvider.send(
-  //         {
-  //            id: 1,
-  //            method: "eth_signTypedData_v4",
-  //            params: [accounts[0], JSON.stringify(msgParams)],
-  //            from: accounts[0]
-  //         },
-  //         function(err, result) {
-  //           if (err) {
-  //             alert(
-  //               'reject show again the box'
-  //             )
-  //               return console.error(err);
-  //           }
-  //           const signature = result.result.substring(2);
-  //           const r = "0x" + signature.substring(0, 64);
-  //           const s = "0x" + signature.substring(64, 128);
-  //           const v = parseInt(signature.substring(128, 130), 16);
+      const metadataTokenJson = await fetch(`https://${process.env.REACT_APP_NON_FUNGIBLE_TOKENS_IPFS_NODE_URL}${loserBoxTokenURIResponse}`)
 
-  //           setSignatureNFTID(signature)
+      const metadataToken = await metadataTokenJson.json()
 
-  //           const from = accounts[0]
+      const arrayIsItemFromContract = []
 
-  //           const recovered = sigUtil.recoverTypedSignature_v4({
-  //             data: msgParams,
-  //             sig: '0x'+ signature
-  //           })
+      const itemsIDs = Object.keys(metadataToken.items)
 
-  //           if (
-  //             ethUtil.toChecksumAddress(recovered) === ethUtil.toChecksumAddress(from)
-  //           ) {
-  //             alert('Successfully recovered signer as ' + from);
-  //           } else {
-  //             alert(
-  //               'Failed to verify signer when comparing ' + result + ' to ' + from
-  //             )
+      const lastItem = await itemsIDs.reduce(async (prev, curr, index) => { // NOTE: we have to resolve the last promise.
+        const isItemExist = await prev
 
-  //           }
-  //         }
-  //       )
-  //     }
+        if (typeof isItemExist !== 'undefined')
+          arrayIsItemFromContract[itemsIDs[index - 1]] = isItemExist
 
-  //     // if (!isAlreadyAskForSign)
-  //     //   signNFTID()
+        return recoverContract.methods.isItemExist(curr).call()
+      }, Promise.resolve())
 
-  //     // setIsAlreadyAskForSign(true)
-  //   }
-  // }, [])
+      // NOTE: We add the last item to the array.
+      arrayIsItemFromContract[itemsIDs[itemsIDs.length - 1]] = lastItem
+
+      await setArrayIsItem(arrayIsItemFromContract)
+    }
+
+    checkItemIfRegistered() // TODO: add result to the local storage and update it if necessary.
+  }, [])
 
   const signNFT = useCallback(async () => {
-
     const chainId = network === 'kovan' ? 42 : 1
     const accounts = await ethereum.eth.getAccounts()
 
@@ -227,25 +187,35 @@ const Token = ({ network, contract, nonFungibleTokens, tokenID }) => {
           sig: signature
         })
 
-        if (ethUtil.toChecksumAddress(recovered) === ethUtil.toChecksumAddress(from)) { // TODO: add the same security in the lambda
+        if (ethUtil.toChecksumAddress(recovered) === ethUtil.toChecksumAddress(from)) {
           // TODO: add try catch to catch exception
-          const resLoserBoxNFTPksRaw = await fetch(`/.netlify/functions/loser-box?network=${network}&tokenID=${tokenID}&msgParams=${encodeURI(JSON.stringify(msgParams))}&signatureNFTID=${signature}`)
-          const resLoserBoxNFTPks = await resLoserBoxNFTPksRaw.json()
-
-          setPrivateKeysNFT(resLoserBoxNFTPks.result)
-
-          const loserBoxNFTPks = recoverLS.loserBoxNFTPks
-          window.localStorage.setItem(
-            'recover',
-            JSON.stringify({
-              ...recoverLS,
-              loserBoxNFTPks: {
-                ...loserBoxNFTPks,
-                tokenID: resLoserBoxNFTPks
-              }
-            })
+          const resLoserBoxNFTPksRaw = await fetch(
+            `/.netlify/functions/loser-box?network=${network}&tokenID=${tokenID}&msgParams=${encodeURI(JSON.stringify(msgParams))}&signatureNFTID=${signature}`
           )
-          setIsModalOpen(false)
+
+          if (resLoserBoxNFTPksRaw.status !== 200) { // NOTE: Check server side if it's the good owner.
+            setIsNFTSignatureRejected(true)
+          } else {
+            const resLoserBoxNFTPks = await resLoserBoxNFTPksRaw.json()
+
+            const privateKeysNFTResult = resLoserBoxNFTPks.result
+
+            setPrivateKeysNFT(privateKeysNFTResult)
+  
+            const loserBoxNFTPks = recoverLS.loserBoxNFTPks
+
+            window.localStorage.setItem(
+              'recover',
+              JSON.stringify({
+                ...recoverLS,
+                loserBoxNFTPks: {
+                  ...loserBoxNFTPks,
+                  [tokenID]: privateKeysNFTResult
+                }
+              })
+            )
+            setIsModalOpen(false)
+          }
         } else {
           setIsNFTSignatureRejected(true)
         }
@@ -269,6 +239,7 @@ const Token = ({ network, contract, nonFungibleTokens, tokenID }) => {
 
   return (
     <Container>
+      {console.log({arrayIsItem})}
       <Modal
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -362,8 +333,22 @@ const Token = ({ network, contract, nonFungibleTokens, tokenID }) => {
               {
                 privateKeysNFT && dataTokenJson.itemsByCategory.stickers.map((stickerID, index) => (
                   <Row key={stickerID}>
-                    <Cell width={'400px'}>{stickerID}</Cell>
-                    <Cell textAlign='right' isAction onClick={() => navigate(`/network/${network}/contract/${contract}/new/items/${stickerID}/pk/${privateKeysNFT[`sticker${index}`]}`)}>Create</Cell>
+                    <Cell width={'400px'}>{stickerID.substring(0, 18)}</Cell>
+                    <Cell
+                      textAlign='right'
+                      isAction
+                      onClick={() => navigate(`
+                        /network/${network}/contract/${contract}/${arrayIsItem[stickerID] ? `items/${stickerID.substring(0, 18)}/owner` : `new/items/${stickerID.substring(0, 18)}/pk/${privateKeysNFT[`sticker${index}`]}`}`
+                      )}
+                    >
+                      {
+                        typeof arrayIsItem[stickerID] === 'undefined'
+                          ? '...'
+                          : arrayIsItem[stickerID]
+                            ? 'View'
+                            : 'Create'
+                      }
+                    </Cell>
                   </Row>
                 ))
               }
@@ -376,10 +361,24 @@ const Token = ({ network, contract, nonFungibleTokens, tokenID }) => {
                 <Cell isHeader textAlign='right'>Action</Cell>
               </Row>
               {
-                privateKeysNFT && dataTokenJson.itemsByCategory.cards.map(cardID => (
+                privateKeysNFT && dataTokenJson.itemsByCategory.cards.map((cardID, index) => (
                   <Row key={cardID}>
-                    <Cell width={'400px'}>{cardID}</Cell>
-                    <Cell textAlign='right' isAction onClick={() => navigate(`/network/${network}/contract/${contract}/new/items/${cardID}/pk/0xd37a245b6758fc4275da9182f7511eb8225b4447432f9b15c74de350fe850306`)}>Create</Cell>
+                    <Cell width={'400px'}>{cardID.substring(0, 18)}</Cell>
+                    <Cell
+                      textAlign='right'
+                      isAction
+                      onClick={() => navigate(
+                        `/network/${network}/contract/${contract}/new/items/${cardID.substring(0, 18)}/pk/${privateKeysNFT[`card${index}`]}`
+                      )}
+                    >
+                      {
+                        typeof arrayIsItem[cardID] === 'undefined' 
+                          ? '...'
+                          : arrayIsItem[cardID]
+                            ? 'View'
+                            : 'Create'
+                      }
+                    </Cell>
                   </Row>
                 ))
               }
@@ -392,10 +391,24 @@ const Token = ({ network, contract, nonFungibleTokens, tokenID }) => {
                 <Cell isHeader textAlign='right'>Action</Cell>
               </Row>
               {
-                privateKeysNFT && dataTokenJson.itemsByCategory.["key ring"].map(keyRingID => (
+                privateKeysNFT && dataTokenJson.itemsByCategory.["key ring"].map((keyRingID, index) => (
                   <Row key={keyRingID}>
-                    <Cell width={'400px'}>{keyRingID}</Cell>
-                    <Cell textAlign='right' isAction onClick={() => navigate(`/network/${network}/contract/${contract}/new/items/${keyRingID}/pk/0xd37a245b6758fc4275da9182f7511eb8225b4447432f9b15c74de350fe850306`)}>Create</Cell>
+                    <Cell width={'400px'}>{keyRingID.substring(0, 18)}</Cell>
+                    <Cell
+                      textAlign='right'
+                      isAction
+                      onClick={() => navigate(
+                        `/network/${network}/contract/${contract}/new/items/${keyRingID.substring(0, 18)}/pk/${privateKeysNFT[`keyRing${index}`]}`
+                      )}
+                    >
+                      {
+                        typeof arrayIsItem[keyRingID] === 'undefined' 
+                          ? '...'
+                          : arrayIsItem[keyRingID]
+                            ? 'View'
+                            : 'Create'
+                      }
+                    </Cell>
                   </Row>
                 ))
               }
