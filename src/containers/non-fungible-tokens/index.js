@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components/macro'
 import { navigate } from '@reach/router'
 import { drizzleReactHooks } from '@drizzle/react-plugin'
-import Dotdotdot from 'react-dotdotdot'
 
 import { useDataloader } from '../../bootstrap/dataloader'
 import Tile from '../../components/non-fungible-tokens/tile'
@@ -28,11 +27,14 @@ const Type = styled.div`
   margin-bottom: 25px;
 `
 
-const Description = styled(Dotdotdot)`
-  font-family: Nunito;
-  font-size: 20px;
-  color: #14213d;
-  font-weight: 100;
+const Description = styled.div`
+  font-family: Roboto;
+  font-size: 220px;
+  color: #A6FFCB;
+  text-align: center;
+  font-weight: 800;
+  text-shadow: -2px -2px 0 #12C2E9, 2px -2px 0 #12C2E9, -2px 2px 0 #12C2E9, 2px 2px 0 #12C2E9;
+  font-smoothing: antialiased;
 `
 
 const NonFungibleTokens = ({ network, contract, nonFungibleTokens }) => {
@@ -105,13 +107,14 @@ const NonFungibleTokens = ({ network, contract, nonFungibleTokens }) => {
           <Tile
           key={token.ID}
           network={network}
+          pattern={token.content ? token.content.pattern : null }
           onClick={
             () => navigate(`
               /network/${network}/contract/${contract}/non-fungible-tokens/${nonFungibleTokens}/tokens/${token.ID}
             `)
           }
         >
-          <Type>{token.content && token.content.title}</Type>
+          {/* <Type>{token.content && token.content.title}</Type> */}
           <Description clamp={5}>
             {token.ID}
           </Description>

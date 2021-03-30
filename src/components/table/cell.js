@@ -7,8 +7,8 @@ const StyledCell = styled.div`
   font-size: 20px;
   line-height: 40px;
   color: #444;
-  width: ${props => props.width || "auto"};
-  text-align:  ${props => props.textAlign || "left"};
+  width: ${({width}) => width || "auto"};
+  text-align:  ${({textAlign}) => textAlign || "left"};
 
   ${({ isHeader }) => isHeader && `
     font-size: 18px;

@@ -6,15 +6,12 @@ import { navigate } from '@reach/router'
 import { ReactComponent as Plus } from '../../assets/images/plus.svg'
 
 const StyledTile = styled.div`
-  color: #14213d;
-  background: #fff;
+  color: #14213D;
   overflow: hidden;
-  font-family: Nunito;
   padding 47px 44px 0 44px;
   box-shadow: 0px 4px 50px rgba(0, 0, 0, 0.1);
   border-radius: 20px;
-  font-family: Nunito;
-  font-size: 16px;
+  background: ${({pattern}) => `url("${pattern}") repeat #A6FFCB` || "#A6FFCB"};
   &:hover {
     cursor: pointer;
     transition: all 0.2s ease-in-out;
@@ -23,7 +20,6 @@ const StyledTile = styled.div`
 `
 
 const StyledTileNew = styled.div`
-  background: rgba(255, 255, 255, 0.53);
   border: 7px solid rgba(255, 255, 255, 0.8);
   box-sizing: border-box;
   border-style: dashed;
@@ -37,6 +33,7 @@ const StyledTileNew = styled.div`
   align-items: center;
   text-align: center;
   color: #fff;
+  background: rgba(255, 255, 255, 0.53);
   &:hover {
     cursor: pointer;
     transition: all 0.2s ease-in-out;
@@ -56,13 +53,14 @@ const TokenCard = ({
   isNewItem,
   isLoadingItem,
   className,
+  pattern,
   onClick,
   children
 }) => {
   return (
     <>
     {isNewItem ? (
-      <StyledTileNew onClick={() => navigate(`/network/${network}/contract/${contract}/non-fungible-tokens`)}>
+      <StyledTileNew onClick={() => window.open('https://recover.ws', '_blank')}>
         <StyledTileTitle>Loser Box</StyledTileTitle>
         <div>
           <Plus />
@@ -71,7 +69,7 @@ const TokenCard = ({
     ) : isLoadingItem ? (
       <StyledTile>Loading...</StyledTile>
     ) : (
-      <StyledTile onClick={onClick} className={`CardItem ${className}`}>
+      <StyledTile onClick={onClick} className={`CardItem ${className}`} pattern={pattern}>
         {children}
       </StyledTile>
     )}
@@ -87,6 +85,7 @@ TokenCard.propTypes = {
   isNewItem: PropTypes.bool,
   isLoadingItem: PropTypes.bool,
   className: PropTypes.string,
+  className: PropTypes.string,
   onClick: PropTypes.func,
   children: PropTypes.node
 }
@@ -99,6 +98,7 @@ TokenCard.defaultProps = {
   isNewItem: false,
   isLoadingItem: false,
   className: '',
+  pattern: '',
   onClick: v => v,
   children: []
 }
