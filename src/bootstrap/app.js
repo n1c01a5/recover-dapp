@@ -10,6 +10,7 @@ import { drizzleReactHooks } from '@drizzle/react-plugin'
 import drizzle from './drizzle'
 import { register } from './service-worker'
 import { ArchonInitializer } from './archon'
+import { ReactComponent as Recover } from '../assets/images/RECOVER.svg'
 
 const { DrizzleProvider, Initializer } = drizzleReactHooks
 
@@ -46,7 +47,7 @@ const Nav = () => {
         style={{ cursor: 'pointer' }}
         className="App-header-menu-logo"
       >
-        RECOVER
+        <Recover />
       </div>
       <Menu right>
         <Link to={`/network/${network}/contract/${contract}`} className="menu-item">
