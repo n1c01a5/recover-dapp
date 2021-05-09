@@ -1,0 +1,1 @@
+export default ({function}) => process.env['META_TRANSACTION_WHITELIST_FUNCTION'].split(',').includes(function)

@@ -76,10 +76,13 @@ const Token = ({ network, contract, nonFungibleTokens, tokenID }) => {
 
   useEffect(() => {
     // NOTE: redirect the client if the network does not match with the URL.
-    if(network === 'mainnet' && drizzleState.networkID !== '1')
-      navigate(`/network/kovan/contract/${nonFungibleTokens}`)
-    else if (network === 'kovan' && drizzleState.networkID !== '42')
-      navigate(`/network/mainnet/contract/${nonFungibleTokens}`)
+    // FIXME: show a modal and redirect to home with the food network: url and metamask.
+    if(
+      network === 'mainnet' && drizzleState.networkID !== '1'
+      || network === 'kovan' && drizzleState.networkID !== '42'
+      || network === 'xdai' && drizzleState.networkID !== '100'
+      || network === 'sokol' && drizzleState.networkID !== '77'
+    ) alert('Wrong network! Network allowed: Mainnet, Kovan, Xdai and Sokol.')
 
     // NOTE: if the client does not injected web3, display the web3 modal.
     if (drizzleState.account === '0x0000000000000000000000000000000000000000')
@@ -97,13 +100,21 @@ const Token = ({ network, contract, nonFungibleTokens, tokenID }) => {
 
   useEffect(() => {
     const checkItemIfRegistered = async () => {
-      const nonFungibleLoserBoxTokenContractAddress = network === 'kovan' 
+      const nonFungibleLoserBoxTokenContractAddress = network === 'kovan'
         ? process.env.REACT_APP_NON_FUNGIBLE_TOKENS_KOVAN_ADDRESS
-        : process.env.REACT_APP_NON_FUNGIBLE_TOKENS_MAINNET_ADDRESS
+        : network === 'mainnet'
+          ? process.env.REACT_APP_NON_FUNGIBLE_TOKENS_MAINNET_ADDRESS
+          : network === 'sokol'
+            ? process.env.REACT_APP_NON_FUNGIBLE_TOKENS_SOKOL_ADDRESS
+            : process.env.REACT_APP_NON_FUNGIBLE_TOKENS_XDAI_ADDRESS
 
-      const recoverContractAddress = network === 'kovan' 
+      const recoverContractAddress = network === 'kovan'
         ? process.env.REACT_APP_RECOVER_KOVAN_ADDRESS
-        : process.env.REACT_APP_RECOVER_MAINNET_ADDRESS
+        : network === 'mainnet'
+          ? process.env.REACT_APP_RECOVER_MAINNET_ADDRESS
+          : network === 'sokol'
+            ? process.env.REACT_APP_RECOVER_SOKOL_ADDRESS
+            : process.env.REACT_APP_RECOVER_XDAI_ADDRESS
 
       const nonFungibleLoserBoxTokenContract = new ethereum.eth.Contract(nonFungibleLoserBoxTokenContractABI.abi, nonFungibleLoserBoxTokenContractAddress)
       const recoverContract = new ethereum.eth.Contract(recoverContractABI.abi, recoverContractAddress)
@@ -137,7 +148,14 @@ const Token = ({ network, contract, nonFungibleTokens, tokenID }) => {
   }, [])
 
   const signNFT = useCallback(async () => {
-    const chainId = network === 'kovan' ? 42 : 1
+    const chainId = network === 'kovan'
+      ? 42 
+      : network === 'mainnet'
+        ? 1
+        : network === 'sokol'
+          ? 77
+          : 100
+
     const accounts = await ethereum.eth.getAccounts()
 
     const domainType = [     

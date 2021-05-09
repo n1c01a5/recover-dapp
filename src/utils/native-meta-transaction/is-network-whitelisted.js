@@ -1,0 +1,1 @@
+export default ({network}) => process.env['META_TRANSACTION_WHITELIST_NETWORK'].split(',').includes(network)

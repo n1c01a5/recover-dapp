@@ -5,7 +5,7 @@ import dotenv from 'dotenv'
 import getIdByAddress from '../utils/get-id-by-address'
 
 // TODO: move to utils folder
-// Set up airtable envs in the development environnement.
+// Set up airtable envs in the development environment.
 if (fs.existsSync('.airtable')) {
   const envConfig = dotenv.parse(
     fs.readFileSync('.airtable')

@@ -71,10 +71,13 @@ const Home = ({ network, contract }) => {
 
   useEffect(() => {
     // NOTE: redirect the client if the network does not match with the URL.
-    if(network === 'mainnet' && drizzleState.networkID !== '1')
-      navigate(`/network/kovan/contract/${process.env.REACT_APP_RECOVER_KOVAN_ADDRESS}`)
-    else if (network === 'kovan' && drizzleState.networkID !== '42')
-      navigate(`/network/mainnet/contract/${process.env.REACT_APP_RECOVER_MAINNET_ADDRESS}`)
+    // FIXME: show a modal and redirect to home with the food network: url and metamask.
+    if(
+      network === 'mainnet' && drizzleState.networkID !== '1'
+      || network === 'kovan' && drizzleState.networkID !== '42'
+      || network === 'xdai' && drizzleState.networkID !== '100'
+      || network === 'sokol' && drizzleState.networkID !== '77'
+    ) alert('Wrong network! Network allowed: Mainnet, Kovan, Xdai and Sokol.')
 
     // NOTE: if the client does not injected web3, display the web3 modal.
     if (drizzleState.account === '0x0000000000000000000000000000000000000000')

@@ -7,7 +7,7 @@ import * as ethUtil from 'ethereumjs-util'
 import getLoserBoxNftByID from '../utils/get-loser-box-nft-by-id'
 
 // TODO: move to utils folder
-// Set up airtable envs in the development environnement.
+// Set up airtable envs in the development environment.
 if (fs.existsSync('.airtable')) {
   const envConfig = dotenv.parse(
     fs.readFileSync('.airtable')

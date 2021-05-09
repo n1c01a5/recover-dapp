@@ -193,11 +193,16 @@ const New = ({network, contract, itemID, pk}) => {
   }))
 
   useEffect(() => {
-      if (network === 'mainnet' && drizzleState.networkID !== '1')
-        navigate(`network/kovan/contract/${process.env.REACT_APP_RECOVER_KOVAN_ADDRESS}/new/items/${itemID ? itemID : 'undefined'}/pk/${pk ? pk : 'undefined'}`)
-      else if (network === 'kovan' && drizzleState.networkID !== '42')
-        navigate(`network/mainnet/contract/${process.env.REACT_APP_RECOVER_MAINNET_ADDRESS}/new/items/${itemID ? itemID : 'undefined'}/pk/${pk ? pk : 'undefined'}`)
+    // NOTE: redirect the client if the network does not match with the URL.
+    // FIXME: show a modal and redirect to home with the food network: url and metamask.
+    if(
+      network === 'mainnet' && drizzleState.networkID !== '1'
+      || network === 'kovan' && drizzleState.networkID !== '42'
+      || network === 'xdai' && drizzleState.networkID !== '100'
+      || network === 'sokol' && drizzleState.networkID !== '77'
+    ) alert('Wrong network! Network allowed: Mainnet, Kovan, Xdai and Sokol.')
 
+    // NOTE: if the client does not injected web3, display the web3 modal.
     if (drizzleState.account === '0x0000000000000000000000000000000000000000')
       setMMOpen(true)
   }, [drizzleState])
@@ -212,16 +217,16 @@ const New = ({network, contract, itemID, pk}) => {
       setIdentity(EthCrypto.createIdentity())
   }, [itemID, pk])
 
-  const webcamRef = React.useRef(null)
+  // const webcamRef = React.useRef(null)
 
-  useEffect(() => {
-      if(isQrCodeScanModalOpen)
-        setInterval(() => console.log(webcamRef.current.getScreenshot()), 1000) // FIXME: take screenshot every seconds. Must be change to 200.
-      // TODO: send to service to decode it
-      // then redirect to the QrCode result
-    },
-    [isQrCodeScanModalOpen, webcamRef]
-  )
+  // useEffect(() => {
+  //     if(isQrCodeScanModalOpen)
+  //       setInterval(() => console.log(webcamRef.current.getScreenshot()), 1000) // FIXME: take screenshot every seconds. Must be change to 200.
+  //     // TODO: send to service to decode it
+  //     // then redirect to the QrCode result
+  //   },
+  //   [isQrCodeScanModalOpen, webcamRef]
+  // )
 
   const { send, status } = useCacheSend('Recover', 'addItem')
 
@@ -231,21 +236,19 @@ const New = ({network, contract, itemID, pk}) => {
       addressForEncryption,
       descriptionEncryptedIpfsUrl,
       rewardAmount,
-      timeoutLocked,
-      value
+      timeoutLocked
     }) =>
       send(
         itemID,
         addressForEncryption,
         descriptionEncryptedIpfsUrl,
         drizzle.web3.utils.toWei(rewardAmount, 'ether'),
-        Number(timeoutLocked),
-        { value }
+        Number(timeoutLocked)
       )
   )
 
   const addSettings = useCallback(
-    async ({ email, phoneNumber, fundClaims, timeoutLocked }) => {
+    async ({ email, phoneNumber, timeoutLocked }) => {
       const signMsg = await drizzle.web3.eth.personal.sign(
         `Signature required to check if your are the owner of this address: ${
           drizzleState.account
@@ -274,7 +277,6 @@ const New = ({network, contract, itemID, pk}) => {
                 [drizzleState.ID]: {
                   email,
                   phoneNumber,
-                  fundClaims,
                   timeoutLocked
                 }
               })
@@ -330,7 +332,7 @@ const New = ({network, contract, itemID, pk}) => {
           </ol>
         </ModalContent>
       </Modal>
-      <Modal
+      {/* <Modal
         open={isQrCodeScanModalOpen}
         onClose={v => v}
         showCloseIcon={false}
@@ -355,7 +357,7 @@ const New = ({network, contract, itemID, pk}) => {
           />
           This feature is under development.
         </ModalContent>
-      </Modal>
+      </Modal> */}
       {itemID !== 'undefined' && (
         <Box>
           <div style={{ flexGrow: '1', textAlign: 'center' }}>
@@ -381,9 +383,6 @@ const New = ({network, contract, itemID, pk}) => {
             phoneNumber:
               (recover[drizzleState.ID] && recover[drizzleState.ID].phoneNumber)
               || '',
-            fundClaims:
-              (recover[drizzleState.ID] && recover[drizzleState.ID].fundClaims)
-              || '0.015',
             timeoutLocked:
               (recover[drizzleState.ID] && recover[drizzleState.ID].timeoutLocked)
               || 604800
@@ -414,9 +413,6 @@ const New = ({network, contract, itemID, pk}) => {
               && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)
             )
               errors.email = 'Invalid email address'
-            if (isNaN(values.fundClaims)) errors.fundClaims = 'Number Required'
-            if (values.fundClaims <= 0)
-              errors.fundClaims = 'Amount of the fund claims must be positive.'
             if (isNaN(values.timeoutLocked))
               errors.timeoutLocked = 'Number Required'
             if (values.timeoutLocked <= 0)
@@ -452,7 +448,11 @@ const New = ({network, contract, itemID, pk}) => {
                     arbitrator:
                       drizzleState.networkID === '42'
                         ? process.env.REACT_APP_ARBITRATOR_KOVAN_ADDRESS
-                        : process.env.REACT_APP_ARBITRATOR_MAINNET_ADDRESS
+                        : drizzleState.networkID === '1'
+                          ? process.env.REACT_APP_ARBITRATOR_MAINNET_ADDRESS
+                          : drizzleState.networkID === '77'
+                            ? process.env.REACT_APP_ARBITRATOR_SOKOL_ADDRESS
+                            : process.env.REACT_APP_ARBITRATOR_XDAI_ADDRESS
                   })
                 )
               )
@@ -482,17 +482,6 @@ const New = ({network, contract, itemID, pk}) => {
                   privateKey: identity.privateKey
                 }
               })
-            )
-
-            const fundClaimsAmount =
-              (recover[drizzleState.ID] &&
-                recover[drizzleState.ID].fundClaims) ||
-              '0.015'
-
-            values.value = drizzle.web3.utils.toWei(
-              typeof fundClaimsAmount === 'string'
-                ? fundClaimsAmount
-                : String(fundClaimsAmount)
             )
 
             values.timeoutLocked =
@@ -647,24 +636,6 @@ const New = ({network, contract, itemID, pk}) => {
                     <ErrorMessage name="phoneNumber" component={Error} />
                   </FieldContainer>
                   <FieldContainer>
-                    <StyledLabel htmlFor="fundClaims">
-                      <span
-                        className="info"
-                        aria-label="
-                          The amount sent to the wallet finder to pay the gas to claim without ETH.
-                          It's a small amount of ETH.
-                        "
-                      >
-                        Fund Claims (ETH)
-                      </span>
-                    </StyledLabel>
-                    <StyledField
-                      name="fundClaims"
-                      placeholder="PreFund Gas Cost to Claim"
-                    />
-                    <ErrorMessage name="fundClaims" component={Error} />
-                  </FieldContainer>
-                  <FieldContainer>
                     <StyledLabel htmlFor="timeoutLocked">
                       <span
                         className="info"
@@ -710,7 +681,6 @@ const New = ({network, contract, itemID, pk}) => {
                       addSettings({
                         email: values.email,
                         phoneNumber: values.phoneNumber,
-                        fundClaims: values.fundClaims,
                         timeoutLocked: values.timeoutLocked
                       })
                     }
@@ -735,43 +705,38 @@ const New = ({network, contract, itemID, pk}) => {
                 </Submit>
               </StyledForm>
               {status && status === 'pending' && (
-                <MessageBoxTx
-                  pending={true}
-                  onClick={() =>
-                    window.open(
-                      `https://${
-                        drizzleState.networkID === '42' ? 'kovan.' : ''
-                      }etherscan.io/tx/${
-                        Object.keys(drizzleState.transactions)[0]
-                      }`,
-                      '_blank'
-                    )
-                  }
-                />
-              )}
-              {status && status !== 'pending' && (
                 <>
                   <MessageBoxTx
                     ongoing={true}
                     onClick={() =>
                       window.open(
-                        `https://${
-                          drizzleState.networkID === '42' ? 'kovan.' : ''
-                        }etherscan.io/tx/${
+                        `${
+                          drizzleState.networkID === '42'
+                            ? process.env.REACT_APP_CHAIN_EXPLORER_KOVAN_ADDRESS
+                            : drizzleState.networkID === '1'
+                              ? process.env.REACT_APP_CHAIN_EXPLORER_MAINNET_ADDRESS
+                              : drizzleState.networkID === '77'
+                                ? process.env.REACT_APP_CHAIN_EXPLORER_SOKOL_ADDRESS
+                                : process.env.REACT_APP_CHAIN_EXPLORER_XDAI_ADDRESS
+                          }/tx/${
                           Object.keys(drizzleState.transactions)[0]
                         }`,
                         '_blank'
                       )
                     }
                   />
-                  {/* FIXME: use `navigate()` if it's possible else add note */}
-                  {status === 'success' && isMetaEvidencePublish
-                    ? window.location.replace(
-                        `/network/${network}/contract/${contract}/items/${values.itemID.replace(/0+$/, '')}/owner`
-                      )
-                    : 'Error during the transaction.'}
+
                 </>
               )}
+              {/* FIXME: use `navigate()` if it's possible else add note */}
+              {status === 'success' && isMetaEvidencePublish
+                && window.location.replace(
+                  `/network/${network}/contract/${contract}/items/${values.itemID.replace(/0+$/, '')}/owner`
+                )
+              }
+              {status !== 'success' || status !== 'pending' &&
+                'Error with the transaction. Please contact contact@recover.ws .'
+              }
             </>
           )}
         </Formik>

@@ -56,7 +56,7 @@ const _404 = ({uri, Web3}) => {
         <StyledMessageLine3 className="ternary-color theme-color">
           {
             Web3
-              ? 'Please make sure you have your wallet unlocked on Mainnet or Kovan. If you don\'t have a wallet, we recommend you install MetaMask on desktop and Trust on mobile.'
+              ? 'Please make sure you have your wallet unlocked on Mainnet, Kovan, XDai or Sokol. If you don\'t have a wallet, we recommend you install MetaMask on desktop and Trust on mobile.'
               : null
           }
         </StyledMessageLine3>

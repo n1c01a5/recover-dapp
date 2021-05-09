@@ -159,7 +159,13 @@ const Error = styled.div`
 const Claim = ({ network, contract, itemID_Pk }) => {
   const [ethereum] = useState( // FIXME: do we need the `useState()`?
     new Web3(
-      network === 'kovan' ? process.env.REACT_APP_WEB3_KOVAN_FALLBACK_URL : process.env.REACT_APP_WEB3_MAINNET_FALLBACK_URL
+      network === 'kovan'
+        ? process.env.REACT_APP_WEB3_KOVAN_FALLBACK_URL
+        : network === 'mainnet'
+          ? process.env.REACT_APP_WEB3_MAINNET_FALLBACK_URL
+          : network === 'sokol'
+            ? process.env.REACT_APP_WEB3_SOKOL_FALLBACK_URL
+            : process.env.REACT_APP_WEB3_XDAI_FALLBACK_URL
     )
   )
 
@@ -176,7 +182,11 @@ const Claim = ({ network, contract, itemID_Pk }) => {
         RecoverABI.abi,
         network === 'kovan'
           ? process.env.REACT_APP_RECOVER_KOVAN_ADDRESS
-          : process.env.REACT_APP_RECOVER_MAINNET_ADDRESS
+          : network === 'mainnet'
+            ? process.env.REACT_APP_RECOVER_MAINNET_ADDRESS
+            : network === 'sokol'
+              ? process.env.REACT_APP_RECOVER_SOKOL_ADDRESS
+              : process.env.REACT_APP_RECOVER_XDAI_ADDRESS
       )
 
       const getItem = async () => await RecoverEth.methods.items(itemID.padEnd(66, '0')).call()
@@ -237,7 +247,15 @@ const Claim = ({ network, contract, itemID_Pk }) => {
         ipfsHashMetaEvidenceObj[1].hash
       }${ipfsHashMetaEvidenceObj[0].path}`
 
-      const RecoverEth = new ethereum.eth.Contract(RecoverABI.abi, network === 'kovan' ? process.env.REACT_APP_RECOVER_KOVAN_ADDRESS : process.env.REACT_APP_RECOVER_MAINNET_ADDRESS)
+      const RecoverEth = new ethereum.eth.Contract(
+        RecoverABI.abi, network === 'kovan'
+          ? process.env.REACT_APP_RECOVER_KOVAN_ADDRESS 
+          : network === 'mainnet'
+            ? process.env.REACT_APP_RECOVER_MAINNET_ADDRESS
+            : network === 'sokol'
+              ? process.env.REACT_APP_SOKOL_MAINNET_ADDRESS
+              : process.env.REACT_APP_XDAI_MAINNET_ADDRESS
+      )
 
       const encodedABI = RecoverEth.methods
         .claim(itemID.padEnd(66, '0'), finder, descriptionEncryptedIpfsUrl)
@@ -246,8 +264,14 @@ const Claim = ({ network, contract, itemID_Pk }) => {
       await ethereum.eth.accounts
         .signTransaction(
           {
-            to: network === 'kovan' ? process.env.REACT_APP_RECOVER_KOVAN_ADDRESS : process.env.REACT_APP_RECOVER_MAINNET_ADDRESS,
-            gas: 255201, // TODO: compute the gas cost before
+            to: network === 'kovan'
+              ? process.env.REACT_APP_RECOVER_KOVAN_ADDRESS
+              : network === 'mainnet'
+                ? process.env.REACT_APP_RECOVER_MAINNET_ADDRESS
+                : network === 'sokol'
+                  ? process.env.REACT_APP_RECOVER_SOKOL_ADDRESS
+                  : process.env.REACT_APP_RECOVER_XDAI_ADDRESS,
+            gas: 255201, // FIXME: compute the gas cost before
             data: encodedABI
           },
           privateKey
@@ -429,6 +453,7 @@ const Claim = ({ network, contract, itemID_Pk }) => {
                 </Button>
               </div>
             </StyledForm>
+            {/* TODO: add onClick to show the transaction on Etherscan or Blockscout */}
             {isClaim && <MessageBoxTx ongoing={true} />}
           </>
         )}

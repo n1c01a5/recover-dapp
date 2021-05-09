@@ -161,10 +161,14 @@ const Finder = ({network, contract, claimID}) => {
   }))
 
   useEffect(() => {
-    if(network === 'mainnet' && drizzleState.networkID !== '1')
-      navigate(`/network/kovan/contract/${process.env.REACT_APP_RECOVER_KOVAN_ADDRESS}`)
-    else if (network === 'kovan' && drizzleState.networkID !== '42')
-      navigate(`/network/mainnet/contract/${process.env.REACT_APP_RECOVER_MAINNET_ADDRESS}`)
+    // NOTE: redirect the client if the network does not match with the URL.
+    // FIXME: show a modal and redirect to home with the food network: url and metamask.
+    if(
+      network === 'mainnet' && drizzleState.networkID !== '1'
+      || network === 'kovan' && drizzleState.networkID !== '42'
+      || network === 'xdai' && drizzleState.networkID !== '100'
+      || network === 'sokol' && drizzleState.networkID !== '77'
+    ) alert('Wrong network! Network allowed: Mainnet, Kovan, Xdai and Sokol.')
   }, [drizzleState])
 
   const resetEvidenceReset = useCallback(resetForm => {
@@ -454,9 +458,15 @@ const Finder = ({network, contract, claimID}) => {
                 pending={true}
                 onClick={() => {
                   window.open(
-                    `https://${
-                      drizzleState.networkID === '42' ? 'kovan.' : ''
-                    }etherscan.io/tx/${
+                    `${
+                      drizzleState.networkID === '42'
+                        ? process.env.REACT_APP_CHAIN_EXPLORER_KOVAN_ADDRESS
+                        : drizzleState.networkID === '1'
+                          ? process.env.REACT_APP_CHAIN_EXPLORER_MAINNET_ADDRESS
+                          : drizzleState.networkID === '77'
+                            ? process.env.REACT_APP_CHAIN_EXPLORER_SOKOL_ADDRESS
+                            : process.env.REACT_APP_CHAIN_EXPLORER_XDAI_ADDRESS
+                    }/tx/${
                       Object.keys(drizzleState.transactions)[0]
                     }`,
                     '_blank'

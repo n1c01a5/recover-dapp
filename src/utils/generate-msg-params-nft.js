@@ -18,7 +18,7 @@ export default ({
   domain: {
     name: "Loser Box NFT",
     version: "1",
-    salt: '0x' + chainId.toString(16).padStart(64, '0')
+    salt: `0x${chainId.toString(16).padStart(64, '0')}`
   },
   primaryType: "Message",
   message: {

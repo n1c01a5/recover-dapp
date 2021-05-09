@@ -92,7 +92,13 @@ export default ({network, itemID, pk}) => {
 
   const [ethereum] = useState( // FIXME: do we need the `useState()`?
     new Web3(
-      network === 'kovan' ? process.env.REACT_APP_WEB3_KOVAN_FALLBACK_URL : process.env.REACT_APP_WEB3_MAINNET_FALLBACK_URL
+      network === 'kovan'
+        ? process.env.REACT_APP_WEB3_KOVAN_FALLBACK_URL 
+        : network === 'mainnet'
+          ? process.env.REACT_APP_WEB3_MAINNET_FALLBACK_URL
+          : network === 'sokol'
+            ? process.env.REACT_APP_WEB3_SOKOL_FALLBACK_URL
+            : process.env.REACT_APP_WEB3_XDAI_FALLBACK_URL
     )
   )
 
@@ -102,7 +108,11 @@ export default ({network, itemID, pk}) => {
         RecoverABI.abi,
         network === 'kovan'
           ? process.env.REACT_APP_RECOVER_KOVAN_ADDRESS
-          : process.env.REACT_APP_RECOVER_MAINNET_ADDRESS
+          : network === 'mainnet'
+            ? process.env.REACT_APP_RECOVER_MAINNET_ADDRESS
+            : network === 'sokol'
+              ? process.env.REACT_APP_RECOVER_SOKOL_ADDRESS
+              : process.env.REACT_APP_RECOVER_XDAI_ADDRESS
       )
 
       const getItem = async () => await RecoverEth.methods.items(itemID.padEnd(66, '0')).call()

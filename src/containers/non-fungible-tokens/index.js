@@ -30,10 +30,10 @@ const Type = styled.div`
 const Description = styled.div`
   font-family: Roboto;
   font-size: 220px;
-  color: #A6FFCB;
+  color: #a6ffcc;
   text-align: center;
   font-weight: 800;
-  text-shadow: -2px -2px 0 #12C2E9, 2px -2px 0 #12C2E9, -2px 2px 0 #12C2E9, 2px 2px 0 #12C2E9;
+  text-shadow: -2px -2px 0 #12c2e9, 2px -2px 0 #12c2e9, -2px 2px 0 #12c2e9, 2px 2px 0 #12c2e9;
   font-smoothing: antialiased;
 `
 
@@ -52,10 +52,13 @@ const NonFungibleTokens = ({ network, contract, nonFungibleTokens }) => {
 
   useEffect(() => {
     // NOTE: redirect the client if the network does not match with the URL.
-    if(network === 'mainnet' && drizzleState.networkID !== '1')
-      navigate(`/network/kovan/contract/${nonFungibleTokens}`)
-    else if (network === 'kovan' && drizzleState.networkID !== '42')
-      navigate(`/network/mainnet/contract/${nonFungibleTokens}`)
+    // FIXME: show a modal and redirect to home with the food network: url and metamask.
+    if(
+      network === 'mainnet' && drizzleState.networkID !== '1'
+      || network === 'kovan' && drizzleState.networkID !== '42'
+      || network === 'xdai' && drizzleState.networkID !== '100'
+      || network === 'sokol' && drizzleState.networkID !== '77'
+    ) alert('Wrong network! Network allowed: Mainnet, Kovan, Xdai and Sokol.')
 
     // NOTE: if the client does not injected web3, display the web3 modal.
     if (drizzleState.account === '0x0000000000000000000000000000000000000000')
@@ -105,13 +108,13 @@ const NonFungibleTokens = ({ network, contract, nonFungibleTokens }) => {
       {
         !tokensOfOwner.loading && tokensOfOwner.data.map(token => (
           <Tile
-          key={token.ID}
-          network={network}
-          pattern={token.content ? token.content.pattern : null }
-          onClick={
-            () => navigate(`
-              /network/${network}/contract/${contract}/non-fungible-tokens/${nonFungibleTokens}/tokens/${token.ID}
-            `)
+            key={token.ID}
+            network={network}
+            pattern={token.content ? token.content.pattern : null }
+            onClick={
+              () => navigate(`
+                /network/${network}/contract/${contract}/non-fungible-tokens/${nonFungibleTokens}/tokens/${token.ID}
+              `)
           }
         >
           {/* <Type>{token.content && token.content.title}</Type> */}
